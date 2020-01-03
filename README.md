@@ -1,44 +1,117 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Permissions POC
 
-## Available Scripts
+## Goals
+1. Reusable logic to conditionally render elements based on a combination of roles and feature flags
+2. Be able to permission routes, switch between views given permissions (e.g. write vs read only)
+3. Define custom messages when a route is not viewable
+4. Provide optional default message when a route is not viewable
 
-In the project directory, you can run:
+## Inspiration
+I was unable to find any community standard libraries or approaches to solving this problem. The most prominent library is called [CASL](https://github.com/stalniy/casl/tree/master/packages/casl-react), and the API for my components is derived largely from their implementation. 
 
-### `yarn start`
+I opted not to use CASL because it locked you into their DSL for defining abilities which we might find complicated when using Keycloak's conventions for defining permissions. It would also require some hacking to combine these abilities with the existence of feature flags. So since it is a small library to begin with, using that solution might have added more complexity then building our own.
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+I also drew from an Auth0 blog [post](https://auth0.com/blog/role-based-access-control-rbac-and-react-apps/) that discussed building RBAC into React apps.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+## Examples
 
-### `yarn test`
+### The Provider
+In order for these components to work, they must be wrapped in a provider, and the `value` prop must contain `userPermissions` and `userFeatureFlags`.
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Example:
 
-### `yarn build`
+```javascript
+export const PermissionsContext = React.createContext({});
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+const App = () => {
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+  const { data: userPermissions } = usePermissions()
+  const { data: userFeatureFlags } = useFeatureFlags()
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+  return (
+    <PermissionsContext.Provider value={{userPermissions, userFeatureFlags }} >
+      <App />
+    </PermissionsContext.Provider>
+  );
+}
 
-### `yarn eject`
+```
+*Note: we could skip the provider entirely if permissions and flags are stored in redux.*
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### Can
+>Single component to conditionally render content based on permissions and feature flags
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```javascript
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+<Can I={['read:invoices']}>
+  <Invoice>
+</Can>
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```
+If the user has the `'read:invoices'` permission, the `<Invoice />` component will render.
 
-## Learn More
+#### Multiple Permissions
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Since the `I` prop is a `string[]`, we can specify an `operator` with either `'and'` or `'or'`.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```javascript
+  <Can I={['create:returns', 'read:outbound'] operator="and"}>
+    <CreateReturnsPage>
+  </Can>
+```
+
+#### With a feature flag
+`<Can />` also accepts a `featureFlag` prop, that when present will require the user to have the required permissions AND the feature flag turned on.
+
+```javascript
+  <Can 
+    I={['create:returns', 'read:outbound']
+    operator="and"}
+    featureFlag="returns"
+  >
+    <CreateReturnsPage>
+  </Can>
+```
+
+### Permissioner
+>Swith between multiple `<Can />` components
+
+Often, we don't just need to render or not, we need to choose between options given a set of conditions. `<Permissioner />` works similar to react-router's `<Switch />` component.
+
+But instead of extending `<Route />` like we do now, we simply insert `<Permissioner />` as a child.
+
+It accepts any number of `<Can />` (or `<Permissioner.Can />`) components as children and will render the first child that satisfies the necessary permissions.
+
+```javascript
+<Route exact path="/edit-and-read">
+  <Permissioner>
+    <Permissioner.Can I={["write:resource"]}>
+      <div>WRITE</div>
+    </Permissioner.Can>
+    <Permissioner.Can I={["read:resource"]}>
+      <div>READ</div>
+    </Permissioner.Can>
+    <Permissioner.Can>
+      <div>Custom Fallback message</div>
+    </Permissioner.Can>
+  </Permissioner>
+</Route>
+```
+
+In this case, `<Permissioner>` will try to render the first child that meets the conditions set in the `I` prop. If no children meet the conditions, it will render the last child since it has no required permissions.
+
+But, it also provides a `showDefaultFallback` prop, to be rendered by default if no children meet the required permissions.
+
+```javascript
+<Route exact path="/feature-flags">
+  <Permissioner showDefaultFallback>
+    <Permissioner.Can 
+      I={["read:resource", "write:resource"]}
+      operator="and"
+      featureFlag="resource"
+    >
+      <div>Two Permissions and a feature flag</div>
+    </Permissioner.Can>
+  </Permissioner>
+</Route>
+```

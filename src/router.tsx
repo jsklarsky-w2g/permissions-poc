@@ -19,10 +19,10 @@ const AppRouter = (): ReactElement  => {
 
         <Route exact path="/edit-and-read">
           <Permissioner>
-            <Permissioner.Can I={["write:esource"]}>
+            <Permissioner.Can I={["write:resource"]}>
               <div>WRITE</div>
             </Permissioner.Can>
-            <Permissioner.Can I={["red:resource"]}>
+            <Permissioner.Can I={["read:resource"]}>
               <div>READ</div>
             </Permissioner.Can>
             <Permissioner.Can>
@@ -33,7 +33,10 @@ const AppRouter = (): ReactElement  => {
 
         <Route exact path="/and">
           <Permissioner>
-            <Permissioner.Can I={["read:resdource", "write:resource"]} operator="and">
+            <Permissioner.Can
+              I={["read:resdource", "write:resource"]}
+              operator="and"
+            >
               <div>Two Permissions (and)</div>
             </Permissioner.Can>
             <Permissioner.Can>
@@ -44,7 +47,10 @@ const AppRouter = (): ReactElement  => {
 
         <Route exact path="/or">
           <Permissioner>
-            <Permissioner.Can I={["read:resource", "write:resource"]} operator="or">
+            <Permissioner.Can 
+              I={["read:resource", "write:resource"]}
+              operator="or"
+            >
               <div>Two Permissions (or)</div>
             </Permissioner.Can>
           </Permissioner>
@@ -52,7 +58,11 @@ const AppRouter = (): ReactElement  => {
 
         <Route exact path="/feature-flags">
           <Permissioner showDefaultFallback>
-            <Permissioner.Can I={["read:resource", "write:resource"]} operator="and" featureFlag="resource">
+            <Permissioner.Can 
+              I={["read:resource", "write:resource"]}
+              operator="and"
+              featureFlag="resource"
+            >
               <div>Two Permissions and a feature flag</div>
             </Permissioner.Can>
           </Permissioner>

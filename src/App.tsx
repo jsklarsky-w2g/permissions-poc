@@ -11,7 +11,10 @@ import {
 const defaultFeature: FeatureFlagType = {}
 const defaultPermissions: RolesAndPermissionsType = []
 
-const defaults: { userPermissions: RolesAndPermissionsType, userFeatureFlags: FeatureFlagType } = {
+const defaults: { 
+  userPermissions: RolesAndPermissionsType, 
+  userFeatureFlags: FeatureFlagType 
+} = {
   userPermissions: defaultPermissions,
   userFeatureFlags: defaultFeature
 }
@@ -24,14 +27,9 @@ const App: React.FC = () => {
   const { data: userFeatureFlags } = useFeatureFlags()
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <PermissionsContext.Provider value={{userPermissions, userFeatureFlags }} >
-          <AppRouter />
-        </PermissionsContext.Provider>
-      </header>
-    </div>
+    <PermissionsContext.Provider value={{userPermissions, userFeatureFlags }} >
+      <AppRouter />
+    </PermissionsContext.Provider>
   );
 }
 
