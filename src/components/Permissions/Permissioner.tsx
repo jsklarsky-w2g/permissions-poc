@@ -12,8 +12,7 @@ const Permissioner = ({ children, showDefaultFallback = false }: PermissionerPro
 
   // works like react-router Switch
   // finds the first child that satisfies the match conditions and renders only that
-  const match = React.Children.toArray(children).find((child): boolean => {
-    const { featureFlag, operator, I } = child.props
+  const match = React.Children.toArray(children).find(({ props: { I, operator, featureFlag }}): boolean => {
     return permissionsMatcher({I, featureFlag, operator, userFeatureFlags, userPermissions})
   })
   
