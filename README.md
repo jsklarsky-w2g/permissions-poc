@@ -80,7 +80,7 @@ Often, we don't just need to render or not, we need to choose between options gi
 
 But instead of extending `<Route />` like we do now, we simply insert `<Permissioner />` as a child.
 
-It accepts any number of `<Can />` (or `<Permissioner.Can />`) components as children and will render the first child that satisfies the necessary permissions.
+It accepts any number of `<Permissioner.Can />` children and will render the first child that satisfies the necessary permissions. It would also work with `<Can />` as children, but that is an unnecessary import and will result in the permissions checker running twice on each render. 
 
 ```javascript
 <Route exact path="/edit-and-read">

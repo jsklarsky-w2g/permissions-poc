@@ -35,7 +35,6 @@ const App: React.FC = () => {
           </PermissionsContext.Provider>
       </header>
     </div>
-
   );
 }
 

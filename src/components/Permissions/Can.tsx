@@ -7,7 +7,7 @@ const Can = ({I, featureFlag, children, operator }: PermissionProps): ReactEleme
   // this could be useRedux if permissions and FF are in redux
   const { userPermissions, userFeatureFlags } = useContext(PermissionsContext)
 
-  const shouldRenderChild = permissionsMatcher({
+  const shouldRenderChildren = permissionsMatcher({
     I, 
     featureFlag,
     operator,
@@ -15,7 +15,7 @@ const Can = ({I, featureFlag, children, operator }: PermissionProps): ReactEleme
     userPermissions
   })
 
-  return shouldRenderChild ? children : null
+  return shouldRenderChildren ? children : null
 }
 
 export default Can
