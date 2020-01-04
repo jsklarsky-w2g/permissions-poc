@@ -9,7 +9,7 @@ export default function () {
       <div>home</div>
       <Link to="edit-and-read">edit-and-read</Link>
       <Link to="and">two permissions (and)</Link>
-      <Link to="or">two permissions (ors)</Link>
+      <Link to="or">two permissions (or)</Link>
       <Link to="feature-flags">default not viewable</Link>
     </>
   )

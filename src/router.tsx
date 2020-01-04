@@ -29,12 +29,13 @@ const AppRouter = (): ReactElement  => {
               <div>Custom Fallback message</div>
             </Permissioner.Can>
           </Permissioner>
+          <Home/>
         </Route>
 
         <Route exact path="/and">
           <Permissioner>
             <Permissioner.Can
-              I={["read:resdource", "write:resource"]}
+              I={["read:resource", "write:resource"]}
               operator="and"
             >
               <div>Two Permissions (and)</div>
@@ -42,18 +43,20 @@ const AppRouter = (): ReactElement  => {
             <Permissioner.Can>
               <div>Custom Fallback message</div>
             </Permissioner.Can>
-          </Permissioner>        
+          </Permissioner> 
+          <Home/>       
         </Route>          
 
         <Route exact path="/or">
           <Permissioner>
             <Permissioner.Can 
-              I={["read:resource", "write:resource"]}
+              I={["read:rource", "write:resurce"]}
               operator="or"
             >
               <div>Two Permissions (or)</div>
             </Permissioner.Can>
           </Permissioner>
+          <Home/>
         </Route>
 
         <Route exact path="/feature-flags">
@@ -66,6 +69,7 @@ const AppRouter = (): ReactElement  => {
               <div>Two Permissions and a feature flag</div>
             </Permissioner.Can>
           </Permissioner>
+          <Home/>
         </Route>
 
       </Switch>

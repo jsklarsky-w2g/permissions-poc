@@ -27,9 +27,15 @@ const App: React.FC = () => {
   const { data: userFeatureFlags } = useFeatureFlags()
 
   return (
-    <PermissionsContext.Provider value={{userPermissions, userFeatureFlags }} >
-      <AppRouter />
-    </PermissionsContext.Provider>
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+          <PermissionsContext.Provider value={{userPermissions, userFeatureFlags }} >
+            <AppRouter />
+          </PermissionsContext.Provider>
+      </header>
+    </div>
+
   );
 }
 

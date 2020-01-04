@@ -1,12 +1,11 @@
-import React from 'react'
+import React, { ReactElement} from 'react'
 import GenericNotAllowed from 'components/Permissions/GenericNotAllowed'
 import { useContext } from 'react'
 import { PermissionsContext } from 'App'
 import { permissionsMatcher } from './permissionerUtils'
-import { PermissionerProps } from './PermissionerTypes'
-import Can from './Can'
+import { PermissionerProps, PermissionProps } from './PermissionerTypes'
 
-const Permissioner = ({ children, showDefaultFallback = false }: PermissionerProps): any => {
+const Permissioner = ({ children, showDefaultFallback = false }: PermissionerProps): ReactElement => {
   // this could be useRedux if permissions and FF are in redux
   const { userPermissions, userFeatureFlags } = useContext(PermissionsContext)
 
@@ -22,9 +21,17 @@ const Permissioner = ({ children, showDefaultFallback = false }: PermissionerPro
     return <GenericNotAllowed />
   }
 
-  return match
+  // if there's no match, no custom fallback provided, and no default fallback selected,
+  // explicitly return null so React doesn't yell at you
+  return match ? match: null
 }
 
-// the single Can component is aliased here on the Permissioner component for easier importing
-Permissioner.Can = Can
+// There is no need to import the standalone Can component, which would end up repeating the 
+// permissions check. Instead, we provide an aliased Can component namespaced on the Permissioner.
+// It is just a vanilla React component with the same props as <Can />, since the funcionality is
+// outsourced to the Permissioner parent component.
+Permissioner.Can = (props: PermissionProps) => {
+  return React.cloneElement(props.children)
+}
+
 export default Permissioner
