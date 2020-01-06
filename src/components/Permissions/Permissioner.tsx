@@ -30,8 +30,6 @@ const Permissioner = ({ children, showDefaultFallback = false }: PermissionerPro
 // permissions check. Instead, we provide an aliased Can component namespaced on the Permissioner.
 // It is just a vanilla React component with the same props as <Can />, since the funcionality is
 // outsourced to the Permissioner parent component.
-Permissioner.Can = (props: PermissionProps) => {
-  return React.cloneElement(props.children)
-}
+Permissioner.Can = ({ children }: PermissionProps) => children
 
 export default Permissioner
